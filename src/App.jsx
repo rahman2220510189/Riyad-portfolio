@@ -342,12 +342,12 @@ function App() {
                             <NavLink href="projects" activeSection={activeSection} scrollToSection={scrollToSection} isDarkMode={isDarkMode}>Projects</NavLink>
                             <NavLink href="contact" activeSection={activeSection} scrollToSection={scrollToSection} isDarkMode={isDarkMode}>Contact</NavLink>
                             
-                            <button 
+{/*                             <button 
                                 onClick={() => setShowAdminLogin(!showAdminLogin)}
                                 className={`ml-4 px-3 py-1 rounded-full text-sm font-semibold transition ${isDarkMode ? 'bg-purple-600 hover:bg-purple-500 text-white' : 'bg-purple-100 hover:bg-purple-200 text-purple-700'}`}
                             >
                                 Admin
-                            </button>
+                            </button> */}
                         </div>
                         
                         <div className="flex items-center space-x-4">
@@ -384,12 +384,12 @@ function App() {
                                     {section.charAt(0).toUpperCase() + section.slice(1)}
                                 </NavLink>
                             ))}
-                            <button 
+{/*                             <button 
                                 onClick={() => { setShowAdminLogin(!showAdminLogin); setIsMenuOpen(false); }}
                                 className={`block w-full text-left py-2 px-0 font-semibold transition ${isDarkMode ? 'text-purple-400 hover:text-purple-300' : 'text-purple-700 hover:text-purple-900'}`}
                             >
                                 Admin Login
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                 )}
