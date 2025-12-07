@@ -29,7 +29,8 @@ function App() {
     const [projects, setProjects] = useState([]);
     const [isAdmin, setIsAdmin] = useState(false);
     const [adminPassword, setAdminPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    
     const [showAdminLogin, setShowAdminLogin] = useState(false);
     const [contactForm, setContactForm] = useState({ name: '', email: '', message: '' });
     const [projectForm, setProjectForm] = useState({
@@ -103,6 +104,7 @@ function App() {
 
     // Function to fetch projects (Preserved from Code-2)
     const fetchProjects = async () => {
+    setLoading(true)
         try {
             const res = await fetch(`${API_URL}/projects`);
             const data = await res.json();
@@ -116,7 +118,10 @@ function App() {
             setProjects(styledProjects);
         } catch (err) {
             console.error('Error fetching projects:', err);
-        }
+        } finally {
+    setLoading(false)
+}
+
     };
 
     // Function to handle scroll and set active section (Added from Code-1)
@@ -322,6 +327,25 @@ function App() {
             </div>
         );
     };
+  const ProjectCardSkeleton = () => (
+    <div className={`rounded-xl overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'} animate-pulse`}>
+        <div className={`h-48 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'}`}></div>
+        <div className="p-6">
+            <div className={`h-6 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'} rounded mb-3 w-3/4`}></div>
+            <div className={`h-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'} rounded mb-2`}></div>
+            <div className={`h-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'} rounded mb-4 w-5/6`}></div>
+            <div className="flex gap-2 mb-4">
+                <div className={`h-6 w-16 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'} rounded-full`}></div>
+                <div className={`h-6 w-20 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'} rounded-full`}></div>
+                <div className={`h-6 w-16 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'} rounded-full`}></div>
+            </div>
+            <div className="flex gap-4">
+                <div className={`h-4 w-20 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'} rounded`}></div>
+                <div className={`h-4 w-24 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'} rounded`}></div>
+            </div>
+        </div>
+    </div>
+);
 
     return (
         <div className={`min-h-screen transition-colors duration-300 ${themeClasses}`}>
@@ -686,86 +710,98 @@ function App() {
             </section>
             
             <section id="projects" className={`py-20 px-4 ${isDarkMode ? 'bg-gray-900/50' : 'bg-gray-200'}`}>
-                <div className="max-w-7xl mx-auto">
-                    <h2 className="text-4xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                        Featured Projects
-                    </h2>
-                    
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {currentProjects.map(project => (
-                            <div 
-                                key={project._id} 
-                                className={`rounded-xl overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2`}
-                            >
-                                <div className={`h-48 bg-gradient-to-r ${project.gradient} flex items-center justify-center`}>
-                                    {project.image ? (
-                                        <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-                                    ) : (
-                                        <Code size={64} className="text-white opacity-50" />
-                                    )}
-                                </div>
-                                <div className="p-6">
-                                    <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
-                                    <p className={`mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{project.description}</p>
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        {project.technologies.map((tech, i) => (
-                                            <span
-                                                key={i}
-                                                className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm"
-                                            >
-                                                {tech}
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <div className="flex gap-4">
-                                        {project.liveLink && (
-                                            <a
-                                                href={project.liveLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-2 text-blue-500 hover:text-blue-400 transition-colors"
-                                            >
-                                                <ExternalLink size={18} />
-                                                Live Demo
-                                            </a>
-                                        )}
-                                        {project.githubLink && (
-                                            <a
-                                                href={project.githubLink}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="flex items-center gap-2 text-purple-500 hover:text-purple-400 transition-colors"
-                                            >
-                                                <Github size={18} />
-                                                Source Code
-                                            </a>
-                                        )}
-                                    </div>
-                                    {isAdmin && (
-                                        <div className="flex gap-2 mt-4 pt-4 border-t border-gray-700/50">
-                                            <button 
-                                                onClick={() => handleEditProject(project)}
-                                                className="flex-1 bg-blue-600 hover:bg-blue-700 p-2 rounded flex items-center justify-center gap-1 text-sm font-semibold"
-                                            >
-                                                <Edit className="w-4 h-4" /> Edit
-                                            </button>
-                                            <button 
-                                                onClick={() => handleDeleteProject(project._id)}
-                                                className="flex-1 bg-red-600 hover:bg-red-700 p-2 rounded flex items-center justify-center gap-1 text-sm font-semibold"
-                                            >
-                                                <Trash2 className="w-4 h-4" /> Delete
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+    <div className="max-w-7xl mx-auto">
+        <h2 className="text-4xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            Featured Projects
+        </h2>
+        
+        {/* Loading State */}
+        {loading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                    <ProjectCardSkeleton key={n} />
+                ))}
+            </div>
+        ) : (
+            <>
+                {/* Actual Projects */}
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {currentProjects.map(project => (
+                        <div 
+                            key={project._id} 
+                            className={`rounded-xl overflow-hidden ${isDarkMode ? 'bg-gray-800' : 'bg-white'} hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2`}
+                        >
+                            <div className={`h-48 bg-gradient-to-r ${project.gradient} flex items-center justify-center`}>
+                                {project.image ? (
+                                    <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                                ) : (
+                                    <Code size={64} className="text-white opacity-50" />
+                                )}
+                            </div>
+                            <div className="p-6">
+                                <h3 className="text-2xl font-bold mb-3">{project.title}</h3>
+                                <p className={`mb-4 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{project.description}</p>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {project.technologies.map((tech, i) => (
+                                        <span
+                                            key={i}
+                                            className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-sm"
+                                        >
+                                            {tech}
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="flex gap-4">
+                                    {project.liveLink && (
+                                        <a
+                                            href={project.liveLink}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 text-blue-500 hover:text-blue-400 transition-colors"
+                                        >
+                                            <ExternalLink size={18} />
+                                            Live Demo
+                                        </a>
+                                    )}
+                                    {project.githubLink && (
+                                        <a
+                                            href={project.githubLink}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center gap-2 text-purple-500 hover:text-purple-400 transition-colors"
+                                        >
+                                            <Github size={18} />
+                                            Source Code
+                                        </a>
+                                    )}
+                                </div>
+                                {isAdmin && (
+                                    <div className="flex gap-2 mt-4 pt-4 border-t border-gray-700/50">
+                                        <button 
+                                            onClick={() => handleEditProject(project)}
+                                            className="flex-1 bg-blue-600 hover:bg-blue-700 p-2 rounded flex items-center justify-center gap-1 text-sm font-semibold"
+                                        >
+                                            <Edit className="w-4 h-4" /> Edit
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDeleteProject(project._id)}
+                                            className="flex-1 bg-red-600 hover:bg-red-700 p-2 rounded flex items-center justify-center gap-1 text-sm font-semibold"
+                                        >
+                                            <Trash2 className="w-4 h-4" /> Delete
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
-                    {totalPages > 1 && renderPaginationButtons()}
-
-                </div>
-            </section>
+                {/* Pagination */}
+                {totalPages > 1 && renderPaginationButtons()}
+            </>
+        )}
+    </div>
+</section>
 
             {isAdmin && (
                 <section id="admin-panel" className={`py-20 px-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
