@@ -490,7 +490,7 @@ function App() {
                                 View Projects
                             </button>
                             <a
-                                href="/src/assets/MD. Naymur rahman.pdf"
+                                href="/public/MD.Naymur Rahman.pdf"
                                 download
                                 className="px-8 py-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full font-semibold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
                             >
