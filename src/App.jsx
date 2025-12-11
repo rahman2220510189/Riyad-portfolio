@@ -8,7 +8,8 @@ import img from '../src/assets/riyad.jpg'
 import img1 from '../src/assets/riyad1.jpg'
 
 
-const API_URL = 'https://my-portfolio-server-j9ag.onrender.com/api';
+// const API_URL = 'https://my-portfolio-server-j9ag.onrender.com/api';
+const API_URL = 'http://localhost:3000/api';
 
 // Reusable Component for Navigation Link
 const NavLink = ({ href, children, activeSection, scrollToSection, isDarkMode }) => (
@@ -244,17 +245,36 @@ function App() {
 
     const handleContactSubmit = async (e) => {
         e.preventDefault();
-        if (!contactForm.name || !contactForm.email || !contactForm.message) return;
+        if (!contactForm.name || !contactForm.email || !contactForm.message) {
+            setFormStatus('error');
+            return;
+        }
 
         setFormStatus('sending');
-        
-        // Simulating API call for form submission (Code-1 idea)
-        setTimeout(() => {
-            setFormStatus('success');
-            setContactForm({ name: '', email: '', message: '' });
-            setTimeout(() => setFormStatus(''), 3000);
-        }, 1500);
 
+        try {
+            const res = await fetch(`${API_URL}/contact`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(contactForm), 
+            });
+            
+            if (res.ok) {
+                setFormStatus('success');
+                setContactForm({ name: '', email: '', message: '' }); 
+            } else {
+                const errorData = await res.json();
+                console.error('Server error response:', errorData);
+                setFormStatus(`error: ${errorData.message || 'Failed to send message.'}`);
+            }
+        } catch (error) {
+            console.error('Network or fetch error:', error);
+            setFormStatus('error: Connection failed. Please check server status.');
+        } finally {
+            setTimeout(() => setFormStatus(''), 3000);
+        }
     };
     
     // Theme classes
