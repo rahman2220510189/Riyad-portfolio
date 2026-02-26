@@ -9,7 +9,7 @@ import {
 import img from '../src/assets/riyad.jpg';
 import img1 from '../src/assets/riyad1.jpg';
 
-const API_URL = 'https://my-portfolio-server-j9ag.onrender.com/';
+const API_URL = 'https://my-portfolio-server-j9ag.onrender.com/api';
 
 //  Fonts 
 const GlobalStyles = () => (
@@ -347,7 +347,7 @@ function App() {
     e.preventDefault(); setLoading(true);
     try {
       const techArray = projectForm.technologies.split(',').map(t => t.trim()).filter(Boolean);
-      const res = await fetch(`${API_URL}api/projects`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...projectForm, technologies: techArray }) });
+      const res = await fetch(`${API_URL}/projects`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...projectForm, technologies: techArray }) });
       if (res.ok) { fetchProjects(); setProjectForm({ title: '', description: '', technologies: '', image: '', liveLink: '', githubLink: '' }); }
     } catch (err) { console.error(err); }
     setLoading(false);
@@ -357,15 +357,14 @@ function App() {
     e.preventDefault(); setLoading(true);
     try {
       const techArray = projectForm.technologies.split(',').map(t => t.trim()).filter(Boolean);
-      const res = await fetch(`${API_URL}api/projects/${editingProject}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...projectForm, technologies: techArray }) });
+      const res = await fetch(`${API_URL}/projects/${editingProject}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...projectForm, technologies: techArray }) });
       if (res.ok) { fetchProjects(); setProjectForm({ title: '', description: '', technologies: '', image: '', liveLink: '', githubLink: '' }); setEditingProject(null); }
     } catch (err) { console.error(err); }
     setLoading(false);
   };
-
   const handleDeleteProject = async (id) => {
     if (window.confirm('Delete this project?')) {
-      try { await fetch(`${API_URL}api/projects/${id}`, { method: 'DELETE' }); fetchProjects(); } catch (err) { console.error(err); }
+      try { await fetch(`${API_URL}/projects/${id}`, { method: 'DELETE' }); fetchProjects(); } catch (err) { console.error(err); }
     }
   };
 
@@ -380,7 +379,7 @@ function App() {
     if (!contactForm.name || !contactForm.email || !contactForm.message) { setFormStatus('error'); return; }
     setFormStatus('sending');
     try {
-      const res = await fetch(`${API_URL}api/contact`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(contactForm) });
+      const res = await fetch(`${API_URL}/contact`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(contactForm) });
       if (res.ok) { setFormStatus('success'); setContactForm({ name: '', email: '', message: '' }); }
       else setFormStatus('error');
     } catch { setFormStatus('error'); }
