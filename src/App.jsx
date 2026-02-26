@@ -276,6 +276,8 @@ function App() {
   const [formStatus, setFormStatus] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [heroVisible, setHeroVisible] = useState(false);
+const [logoClickCount, setLogoClickCount] = useState(0);
+const [lastClickTime, setLastClickTime] = useState(0);
   const projectsPerPage = 6;
 
   useReveal();
@@ -303,6 +305,30 @@ function App() {
     { title: 'Complete Web Development Course', provider: 'Programming Hero', description: 'Comprehensive full-stack web development training covering MERN stack and modern web practices.', icon: Award },
     { title: 'Responsive Web Design', provider: 'Self-taught & Practice', description: 'Expert in creating responsive, mobile-first designs using modern CSS and Tailwind.', icon: Code },
   ];
+
+  const handleLogoClick = () => {
+  const now = Date.now();
+  if (now - lastClickTime < 500) {
+    const newCount = logoClickCount + 1;
+    setLogoClickCount(newCount);
+    if (newCount >= 5) {
+      setShowAdminLogin(true);
+      setLogoClickCount(0);
+    }
+  } else {
+    setLogoClickCount(1);
+  }
+  setLastClickTime(now);
+};
+useEffect(() => {
+  const handleKeyDown = (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key === 'A') {
+      setShowAdminLogin(true);
+    }
+  };
+  window.addEventListener('keydown', handleKeyDown);
+  return () => window.removeEventListener('keydown', handleKeyDown);
+}, []);
 
 const fetchProjects = async () => {
     setLoading(true);
@@ -421,7 +447,7 @@ const fetchProjects = async () => {
       <nav className={`fixed w-full z-50 transition-all duration-300 ${dark ? 'bg-gray-900/95' : 'bg-white/95'} backdrop-blur-md shadow-lg`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <span className="font-syne text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">NR.</span>
+            <span onClick={handleLogoClick} className="font-syne text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">NR.</span>
             <div className="hidden md:flex space-x-8 items-center">
               {['home','about','education','skills','projects','contact'].map(s => (
                 <NavLink key={s} href={s} activeSection={activeSection} scrollToSection={scrollToSection} isDarkMode={dark}>
