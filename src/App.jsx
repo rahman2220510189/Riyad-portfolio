@@ -308,19 +308,22 @@ const fetchProjects = async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/projects`);
-      if (!res.ok) { setProjects([]); return; }
+      console.log('Response status:', res.status); // ← add
+      if (!res.ok) { 
+        console.log('Response not ok!'); // ← add
+        setProjects([]); 
+        return; 
+      }
       const data = await res.json();
+      console.log('Data received:', data); //
+      console.log('Is array:', Array.isArray(data)); // 
       const gradients = ['from-purple-500 to-pink-500', 'from-blue-500 to-cyan-500', 'from-green-500 to-emerald-500'];
       setProjects(Array.isArray(data) ? data.map((p, i) => ({ ...p, gradient: gradients[i % 3] })) : []);
-    } catch { setProjects([]); }
-    finally { 
-      setLoading(false);
-      
-      setTimeout(() => {
-        const els = document.querySelectorAll('.reveal');
-        els.forEach(el => el.classList.add('visible'));
-      }, 100);
+    } catch(err) { 
+      console.log('Fetch error:', err); // 
+      setProjects([]); 
     }
+    finally { setLoading(false); }
 };
 
   useEffect(() => {
@@ -677,7 +680,8 @@ const fetchProjects = async () => {
       </section>
 
       {/* ── PROJECTS ────────────────────────────────────────────────────── */}
-      <section id="projects" className={`py-20 px-4 ${dark ? 'bg-gray-900/60' : 'bg-gray-200'}`}>
+   
+     <section id="projects" className={`py-20 px-4 ${dark ? 'bg-gray-900/60' : 'bg-gray-200'}`}>
         <div className="max-w-7xl mx-auto">
           <h2 className="reveal font-syne text-4xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Featured Projects
@@ -700,26 +704,48 @@ const fetchProjects = async () => {
             <>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {currentProjects.map((project, i) => (
-                  <div key={project._id} className={`reveal card-hover rounded-2xl overflow-hidden ${dark ? 'bg-gray-800' : 'bg-white'}`} style={{ animationDelay:`${i*0.07}s` }}>
-                    <div className={`h-48 bg-gradient-to-r ${project.gradient} flex items-center justify-center`}>
-                      {project.image ? <img src={project.image} alt={project.title} className="w-full h-full object-cover" /> : <Code size={56} className="text-white opacity-40" />}
+                  // ✅ reveal সরিয়ে দেওয়া হয়েছে — এখন সব projects দেখাবে
+                  <div key={project._id} className={`card-hover rounded-2xl overflow-hidden ${dark ? 'bg-gray-800' : 'bg-white'}`}
+                    style={{ animation: `fadeUp 0.5s ease both`, animationDelay:`${i * 0.08}s` }}>
+                    <div className={`h-48 bg-gradient-to-r ${project.gradient} flex items-center justify-center overflow-hidden`}>
+                      {project.image
+                        ? <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                        : <Code size={56} className="text-white opacity-40" />}
                     </div>
                     <div className="p-6">
                       <h3 className="font-syne text-xl font-bold mb-2">{project.title}</h3>
-                      <p className={`text-sm mb-4 leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>{project.description}</p>
+                      <p className={`text-sm mb-4 leading-relaxed ${dark ? 'text-gray-400' : 'text-gray-600'}`}>
+                        {project.description}
+                      </p>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {project.technologies.map((tech, j) => (
                           <span key={j} className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs">{tech}</span>
                         ))}
                       </div>
                       <div className="flex gap-4">
-                        {project.liveLink && <a href={project.liveLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm transition-colors"><ExternalLink size={15} /> Live Demo</a>}
-                        {project.githubLink && <a href={project.githubLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-purple-400 hover:text-purple-300 text-sm transition-colors"><Github size={15} /> Source</a>}
+                        {project.liveLink && (
+                          <a href={project.liveLink} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-sm transition-colors">
+                            <ExternalLink size={15} /> Live Demo
+                          </a>
+                        )}
+                        {project.githubLink && (
+                          <a href={project.githubLink} target="_blank" rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-purple-400 hover:text-purple-300 text-sm transition-colors">
+                            <Github size={15} /> Source
+                          </a>
+                        )}
                       </div>
                       {isAdmin && (
                         <div className={`flex gap-2 mt-4 pt-4 border-t ${dark ? 'border-gray-700' : 'border-gray-200'}`}>
-                          <button onClick={() => handleEditProject(project)} className="flex-1 bg-blue-600 hover:bg-blue-700 p-2 rounded-lg flex items-center justify-center gap-1 text-sm font-semibold transition-colors"><Edit size={14} /> Edit</button>
-                          <button onClick={() => handleDeleteProject(project._id)} className="flex-1 bg-red-600 hover:bg-red-700 p-2 rounded-lg flex items-center justify-center gap-1 text-sm font-semibold transition-colors"><Trash2 size={14} /> Delete</button>
+                          <button onClick={() => handleEditProject(project)}
+                            className="flex-1 bg-blue-600 hover:bg-blue-700 p-2 rounded-lg flex items-center justify-center gap-1 text-sm font-semibold transition-colors">
+                            <Edit size={14} /> Edit
+                          </button>
+                          <button onClick={() => handleDeleteProject(project._id)}
+                            className="flex-1 bg-red-600 hover:bg-red-700 p-2 rounded-lg flex items-center justify-center gap-1 text-sm font-semibold transition-colors">
+                            <Trash2 size={14} /> Delete
+                          </button>
                         </div>
                       )}
                     </div>
@@ -729,17 +755,25 @@ const fetchProjects = async () => {
 
               {totalPages > 1 && (
                 <div className="flex justify-center items-center gap-2 mt-10">
-                  <button onClick={() => { setCurrentPage(p => Math.max(1,p-1)); scrollToSection('projects'); }} disabled={currentPage===1}
+                  <button
+                    onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); scrollToSection('projects'); }}
+                    disabled={currentPage === 1}
                     className={`p-2 rounded-full transition-all ${dark ? 'bg-gray-700 hover:bg-gray-600 disabled:opacity-40' : 'bg-gray-200 hover:bg-gray-300 disabled:opacity-40'}`}>
                     <ChevronLeft size={20} />
                   </button>
-                  {Array.from({ length: totalPages }, (_, i) => i+1).map(n => (
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
                     <button key={n} onClick={() => { setCurrentPage(n); scrollToSection('projects'); }}
-                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${n===currentPage ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' : dark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'}`}>
+                      className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                        n === currentPage
+                          ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                          : dark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'
+                      }`}>
                       {n}
                     </button>
                   ))}
-                  <button onClick={() => { setCurrentPage(p => Math.min(totalPages,p+1)); scrollToSection('projects'); }} disabled={currentPage===totalPages}
+                  <button
+                    onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); scrollToSection('projects'); }}
+                    disabled={currentPage === totalPages}
                     className={`p-2 rounded-full transition-all ${dark ? 'bg-gray-700 hover:bg-gray-600 disabled:opacity-40' : 'bg-gray-200 hover:bg-gray-300 disabled:opacity-40'}`}>
                     <ChevronRight size={20} />
                   </button>
@@ -749,7 +783,6 @@ const fetchProjects = async () => {
           )}
         </div>
       </section>
-
       {/* ADMIN PANEL  */}
       {isAdmin && (
         <section id="admin-panel" className={`py-20 px-4 ${dark ? 'bg-gray-800' : 'bg-white'}`}>
