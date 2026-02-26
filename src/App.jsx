@@ -304,17 +304,27 @@ function App() {
     { title: 'Responsive Web Design', provider: 'Self-taught & Practice', description: 'Expert in creating responsive, mobile-first designs using modern CSS and Tailwind.', icon: Code },
   ];
 
-  const fetchProjects = async () => {
+ const fetchProjects = async () => {
     setLoading(true);
     try {
       const res = await fetch(`${API_URL}/projects`);
-      if (!res.ok) { setProjects([]); return; }
+      console.log('Response status:', res.status); // 
+      if (!res.ok) { 
+        console.log('Response not ok!'); // 
+        setProjects([]); 
+        return; 
+      }
       const data = await res.json();
+      console.log('Data received:', data); // 
+      console.log('Is array:', Array.isArray(data)); //
       const gradients = ['from-purple-500 to-pink-500', 'from-blue-500 to-cyan-500', 'from-green-500 to-emerald-500'];
       setProjects(Array.isArray(data) ? data.map((p, i) => ({ ...p, gradient: gradients[i % 3] })) : []);
-    } catch { setProjects([]); }
+    } catch(err) { 
+      console.log('Fetch error:', err); //
+      setProjects([]); 
+    }
     finally { setLoading(false); }
-  };
+};
 
   useEffect(() => {
     fetchProjects();
