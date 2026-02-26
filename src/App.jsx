@@ -681,7 +681,7 @@ const fetchProjects = async () => {
 
       {/* ── PROJECTS ────────────────────────────────────────────────────── */}
    
-     <section id="projects" className={`py-20 px-4 ${dark ? 'bg-gray-900/60' : 'bg-gray-200'}`}>
+          <section id="projects" className={`py-20 px-4 ${dark ? 'bg-gray-900/60' : 'bg-gray-200'}`}>
         <div className="max-w-7xl mx-auto">
           <h2 className="reveal font-syne text-4xl md:text-5xl font-bold mb-12 text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
             Featured Projects
@@ -702,11 +702,18 @@ const fetchProjects = async () => {
             </div>
           ) : (
             <>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+             
+              <div key={currentPage} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {currentProjects.map((project, i) => (
-                  // ✅ reveal সরিয়ে দেওয়া হয়েছে — এখন সব projects দেখাবে
-                  <div key={project._id} className={`card-hover rounded-2xl overflow-hidden ${dark ? 'bg-gray-800' : 'bg-white'}`}
-                    style={{ animation: `fadeUp 0.5s ease both`, animationDelay:`${i * 0.08}s` }}>
+                  <div
+                    key={project._id}
+                    className={`card-hover rounded-2xl overflow-hidden ${dark ? 'bg-gray-800' : 'bg-white'}`}
+                    style={{
+                      opacity: 0,
+                      animation: `fadeUp 0.5s ease forwards`,
+                      animationDelay: `${i * 0.08}s`,
+                    }}
+                  >
                     <div className={`h-48 bg-gradient-to-r ${project.gradient} flex items-center justify-center overflow-hidden`}>
                       {project.image
                         ? <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
@@ -719,7 +726,9 @@ const fetchProjects = async () => {
                       </p>
                       <div className="flex flex-wrap gap-2 mb-4">
                         {project.technologies.map((tech, j) => (
-                          <span key={j} className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs">{tech}</span>
+                          <span key={j} className="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs">
+                            {tech}
+                          </span>
                         ))}
                       </div>
                       <div className="flex gap-4">
@@ -761,8 +770,10 @@ const fetchProjects = async () => {
                     className={`p-2 rounded-full transition-all ${dark ? 'bg-gray-700 hover:bg-gray-600 disabled:opacity-40' : 'bg-gray-200 hover:bg-gray-300 disabled:opacity-40'}`}>
                     <ChevronLeft size={20} />
                   </button>
+
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map(n => (
-                    <button key={n} onClick={() => { setCurrentPage(n); scrollToSection('projects'); }}
+                    <button key={n}
+                      onClick={() => { setCurrentPage(n); scrollToSection('projects'); }}
                       className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                         n === currentPage
                           ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
@@ -771,6 +782,7 @@ const fetchProjects = async () => {
                       {n}
                     </button>
                   ))}
+
                   <button
                     onClick={() => { setCurrentPage(p => Math.min(totalPages, p + 1)); scrollToSection('projects'); }}
                     disabled={currentPage === totalPages}
@@ -783,6 +795,7 @@ const fetchProjects = async () => {
           )}
         </div>
       </section>
+
       {/* ADMIN PANEL  */}
       {isAdmin && (
         <section id="admin-panel" className={`py-20 px-4 ${dark ? 'bg-gray-800' : 'bg-white'}`}>
