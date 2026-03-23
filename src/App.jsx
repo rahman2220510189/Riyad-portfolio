@@ -555,7 +555,7 @@ const fetchProjects = async () => {
           <div style={{ ...fu(0.5), display:'flex', flexWrap:'wrap', justifyContent:'center', gap:12, marginBottom:32 }}>
             <button onClick={() => scrollToSection('contact')} className="btn-primary">Hire Me <ArrowRight size={16} /></button>
             <button onClick={() => scrollToSection('projects')} className="btn-outline"><Code2 size={16} /> View Projects</button>
-            <a href="/MD. Naymur Rahman Riad.pdf" download className="btn-green"><Download size={16} /> Download CV</a>
+            <a href="/Naymur Rahman Riad.pdf" download className="btn-green"><Download size={16} /> Download CV</a>
           </div>
 
           {/* Socials */}
